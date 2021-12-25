@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">google sign in</string>
+
+    <string name="facebook_app_id">445402840462454</string>
+    <string name="facebook_client_token">fc32e7333f73d28b787b7109744d56a5</string>
+
+</resources>
