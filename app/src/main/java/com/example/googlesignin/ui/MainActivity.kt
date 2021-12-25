@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var move: Intent
 
+    var loginResult: LoginResult?= null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,28 +99,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSuccess(result: LoginResult?) {
-                    val parameters = Bundle()
-                    parameters.putString("fields", "id,name,email,first_name,gender,last_name")
-                    val request = GraphRequest(
-                        AccessToken.getCurrentAccessToken(),
-                        "/me", null,
-                        HttpMethod.GET,
-                        {
-                            move = Intent(this@MainActivity, ShowUserInformation::class.java)
-                            move.putExtra(
-                                "FacebookLogin", FacebookLoginModel(
-                                    it.jsonObject?.get("first_name").toString(),
-                                    it.jsonObject?.get("last_name").toString(),
-                                    it.jsonObject?.get("email").toString()
-                                )
-                            )
-                            startActivity(move)
-                            Log.i("facebookResponse", it.jsonObject.toString())
+                    loginResult= result
 
-                        }
-                    )
-                    request.parameters = parameters
-                    request.executeAsync()
                 }
             })
         //login manager for facebook
@@ -151,6 +133,40 @@ class MainActivity : AppCompatActivity() {
     //on redirected callback github
     override fun onResume() {
         super.onResume()
+
+        //facebook
+        if (loginResult?.accessToken?.token!=null){
+            val parameters = Bundle()
+            parameters.putString("fields", "id,name,email,first_name,last_name")
+            val request = GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me", null,
+                HttpMethod.GET,
+                {
+                    move = Intent(this@MainActivity, ShowUserInformation::class.java)
+                    move.putExtra(
+                        "FacebookLogin", FacebookLoginModel(
+                            it.jsonObject?.get("first_name").toString(),
+                            it.jsonObject?.get("last_name").toString(),
+                            it.jsonObject?.get("email").toString()
+                        )
+                    )
+                    startActivity(move)
+                    Log.i("facebookResponse", it.jsonObject.toString())
+
+                }
+            )
+            request.parameters = parameters
+            request.executeAsync()
+            loginResult=null
+        }
+
+
+
+
+
+
+
         val uri = intent.data
         if (uri != null) {
             Log.i("callback", uri.toString())

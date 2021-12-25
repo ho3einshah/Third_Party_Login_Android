@@ -14,8 +14,6 @@ interface ApiService {
         @Field("client_secret") clientSecret: String,
         @Field("code") code: String
     ): Call<ResponseBody>
-
-
 @GET("user")
 fun getParameter():Call<GitHubLoginModel>
 
